@@ -1,0 +1,368 @@
+syntax = "proto3";
+
+package route256.loms.api.loms.v1;
+
+option go_package = "route256/loms/api/loms/v1;api";
+
+import "validate/validate.proto";
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "loms service";
+      version: "1.0.0";
+    };
+
+    host: "localhost:8084";
+    base_path: "/";
+    
+    schemes: HTTP;
+    schemes: HTTPS;
+    consumes: "application/json";
+    produces: "application/json";
+};
+
+service Orders {
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {
+        description: "LOMS service"
+        external_docs: {
+          url: "localhost:8084";
+          description: "HTTP loms service";
+        }
+    };
+
+    rpc OrderCreate(OrderCreateRequest) returns (OrderCreateResponse) {
+        option (google.api.http) = {
+            post: "/order/create"
+            body: "*"
+        };
+    };
+    rpc OrderInfo(OrderInfoRequest) returns (OrderInfoResponse) {
+        option (google.api.http) = {
+            get: "/order/info"
+          };
+    };
+    rpc OrderPay(OrderPayRequest) returns (OrderPayResponse) {
+        option (google.api.http) = {
+            post: "/order/pay"
+            body: "*"
+        };
+    };
+    rpc OrderCancel(OrderCancelRequest) returns (OrderCancelResponse) {
+        option (google.api.http) = {
+            post: "/order/cancel"
+            body: "*"
+        };
+    };
+}
+
+service Stocks {
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {
+        description: "LOMS service"
+        external_docs: {
+          url: "localhost:8084";
+          description: "HTTP loms service";
+        }
+    };
+    
+    rpc StocksInfo(StocksInfoRequest) returns (StocksInfoResponse) {
+        option (google.api.http) = {
+            get: "/stock/info"
+        };
+    }
+}
+
+service Health {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {
+      description: "LOMS health check service"
+      external_docs: {
+        url: "localhost:8084"
+        description: "HTTP LOMS health check endpoint"
+      }
+  };
+
+  rpc Check(HealthCheckRequest) returns (HealthCheckResponse) {
+      option (google.api.http) = {
+        get: "/health"
+      };
+  };
+}
+
+message OrderCreateRequest {
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+        json_schema: {
+          title: "OrderCreateRequest"
+          description: "Запрос на создание нового заказа"
+          required: ["userId", "items"]
+        }
+      };
+
+      int64 userId = 1 [
+        (validate.rules).int64 = {gt: 0},
+        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+          title: "User ID",
+          description: "ID пользователя, создавшего заказ",
+          type: INTEGER,
+          format: "int64",
+          example: "12345"
+        }
+      ];
+    
+      repeated Item items = 2 [
+        (validate.rules).repeated = {min_items: 1},
+        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+          title: "Order Items",
+          description: "Список закза",
+          min_items: 1,
+          type: ARRAY
+        }
+      ];
+}
+
+message Item {
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+      json_schema: {
+        title: "Item"
+        description: "Товары в заказе"
+        required: ["sku", "count"]
+      }
+    };
+  
+    int64 sku = 1 [
+      (validate.rules).int64 = {gt: 0},
+      (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title: "SKU",
+        description: "SKU товара",
+        type: INTEGER,
+        format: "int64",
+        example: "1076963"
+      }
+    ];
+  
+    uint32 count = 2 [
+      (validate.rules).uint32 = {gt: 0},
+      (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title: "Count",
+        description: "Количество товаров соответствующего SKU",
+        type: INTEGER,
+        format: "int32",
+        example: "3"
+      }
+    ];
+}
+
+message OrderInfoRequest {
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+      json_schema: {
+        title: "OrderInfoRequest"
+        description: "Запрос о получении информации о заказе по ID"
+        required: ["orderId"]
+      }
+    };
+  
+    int64 orderId = 1 [
+      (validate.rules).int64 = {gt: 0},
+      (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title: "Order ID",
+        description: "Уникальный идентификтор заказа",
+        type: INTEGER,
+        format: "int64",
+        example: "1"
+      }
+    ];
+  }
+  
+  message OrderCreateResponse {
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+      json_schema: {
+        title: "OrderCreateResponse"
+        description: "Ответ после успешно созданного заказа"
+        required: ["orderId"]
+      }
+    };
+  
+    int64 orderId = 1 [
+      (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title: "Order ID",
+        description: "Уникальный идентификатор созданного заказа",
+        type: INTEGER,
+        format: "int64",
+        example: "1"
+      }
+    ];
+  }
+
+  message OrderInfoResponse {
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+      json_schema: {
+        title: "OrderInfoResponse"
+        description: "Информация по заказу"
+        required: ["status", "userId", "items"]
+      }
+    };
+  
+    string status = 1 [
+      (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title: "Статус заказа",
+        description: "Статус текущего заказа",
+        type: STRING,
+        example: "\"Pending\""
+      },
+      (validate.rules).string = {
+        min_len: 1
+      }
+    ];
+  
+    int64 userId = 2 [
+      (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title: "ID пользователя",
+        description: "Идентификатор пользователя, сделавшего заказ",
+        type: INTEGER,
+        format: "int64",
+        example: "12345"
+      },
+      (validate.rules).int64 = {
+        gt: 0
+      }
+    ];
+  
+    repeated Item items = 3 [
+      (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title: "Товары заказа",
+        description: "Список товаров, включенных в заказ"
+      },
+      (validate.rules).repeated = {
+        min_items: 1
+      }
+    ];
+  }
+  
+  message OrderPayRequest {
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+      json_schema: {
+        title: "OrderPayRequest"
+        description: "Запрос на оплату заказа"
+        required: ["orderId"]
+      }
+    };
+  
+    int64 orderId = 1 [
+      (validate.rules).int64 = {gt: 0},
+      (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title: "ID заказа",
+        description: "Идентификатор заказа, который нужно оплатить",
+        type: INTEGER,
+        format: "int64",
+        example: "1"
+      }
+    ];
+  }
+  
+  message OrderPayResponse {
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+      json_schema: {
+        title: "OrderPayResponse"
+        description: "Ответ на запрос оплаты заказа"
+      }
+    };
+  }
+
+  message OrderCancelRequest {
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+      json_schema: {
+        title: "OrderCancelRequest"
+        description: "Запрос на отмену заказа"
+        required: ["orderId"]
+      }
+    };
+  
+    int64 orderId = 1 [
+      (validate.rules).int64 = {gt: 0},
+      (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title: "ID заказа",
+        description: "Идентификатор заказа для отмены",
+        type: INTEGER,
+        format: "int64",
+        example: "1"
+      }
+    ];
+  }
+  
+  message OrderCancelResponse {
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+      json_schema: {
+        title: "OrderCancelResponse"
+        description: "Ответ на запрос отмены заказа"
+      }
+    };
+  }
+  
+  message StocksInfoRequest {
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+      json_schema: {
+        title: "StocksInfoRequest"
+        description: "Запрос информации по складу для SKU"
+        required: ["sku"]
+      }
+    };
+  
+    int64 sku = 1 [
+      (validate.rules).int64 = {gt: 0},
+      (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title: "SKU",
+        description: "Идентификатор товара",
+        type: INTEGER,
+        format: "int64",
+        example: "1076963"
+      }
+    ];
+  }
+  
+  message StocksInfoResponse {
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+      json_schema: {
+        title: "StocksInfoResponse"
+        description: "Ответ с информацией о количестве товара на складе"
+        required: ["count"]
+      }
+    };
+  
+    uint32 count = 1 [
+      (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title: "Количество на складе",
+        description: "Доступное количество товара на складе",
+        type: INTEGER,
+        format: "uint32",
+        example: "50"
+      }
+    ];
+  }
+
+  message HealthCheckRequest {
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+      json_schema: {
+        title: "HealthCheckRequest"
+        description: "Запрос проверки состояния сервиса"
+      }
+    };
+  }
+  
+  message HealthCheckResponse {
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+      json_schema: {
+        title: "HealthCheckResponse"
+        description: "Ответ проверки состояния сервиса"
+        required: ["message"]
+      }
+    };
+  
+    string message = 1 [
+      (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title: "Message",
+        description: "Сообщение состояния сервиса, обычно OK",
+        type: STRING,
+        format: "string"
+      }
+    ];
+  }

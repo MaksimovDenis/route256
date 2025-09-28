@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package route256.comments.api.comments.v1;
+
+option go_package = "route256/comments/api/comments/v1;api";
+
+import "validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+
+service Comments {
+    rpc CommentAdd(CommentAddRequest) returns (CommentAddResponse){};
+    rpc CommentGetByID(CommentGetByIDRequest) returns (CommentGetByIDResponse){};
+    rpc CommentEdit(CommentEditRequest) returns (CommentEditResponse){};
+    rpc CommentListBySku(CommentListBySkuRequest) returns (CommentListBySkuResponse){};
+}
+
+message CommentAddRequest {
+    int64 user_id = 1 [(validate.rules).int64 = {gt: 0}];
+    int64 sku = 2 [(validate.rules).int64 = {gt: 0}];
+    string comment = 3 [(validate.rules).string.min_len = 1, (validate.rules).string.max_len = 255];
+}
+
+message CommentAddResponse {
+    int64 id = 1 [(validate.rules).int64 = {gt: 0}];
+}
+
+message CommentGetByIDRequest {
+    int64 id = 1 [(validate.rules).int64 = {gt: 0}];
+}
+
+message CommentGetByIDResponse {
+    int64 id = 1;
+    int64 user_id = 2;
+    int64 sku = 3;
+    string comment = 4;
+    google.protobuf.Timestamp created_at = 5;
+}
+
+message CommentEditRequest {
+    int64 user_id = 1 [(validate.rules).int64 = {gt: 0}];
+    int64 comment_id = 2 [(validate.rules).int64 = {gt: 0}];
+    string new_comment = 3 [(validate.rules).string.min_len = 1, (validate.rules).string.max_len = 255];
+}
+
+message CommentEditResponse {}
+
+message CommentListBySkuRequest {
+    int64 sku = 1 [(validate.rules).int64 = {gt: 0}];
+}
+
+message CommentListBySkuResponse {
+    repeated Comment comments = 1;
+}
+
+message Comment {
+    int64 id = 1;
+    int64 sku = 2;
+    string comment = 3;
+    google.protobuf.Timestamp created_at = 4;
+    google.protobuf.Timestamp last_modified_at = 5;
+    int32 version = 6;
+}

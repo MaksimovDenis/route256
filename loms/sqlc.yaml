@@ -1,0 +1,16 @@
+version: "2"
+sql:
+  - name: "queries" 
+    engine: "postgresql"
+    queries: "internal/adapter/repository/postgtres/queries_src"
+    schema: "migration"
+    gen:
+      go:
+        package: "repository_sqlc"
+        out: "internal/adapter/repository/postgtres/queries_sqlc_generated"
+        sql_package: "pgx/v5"
+        emit_interface: true
+        emit_pointers_for_null_types: true
+        emit_result_struct_pointers: true
+        emit_params_struct_pointers: true
+        omit_unused_structs: true

@@ -1,0 +1,9 @@
+server:
+  log_level: "debug"
+
+kafka:
+  host: kafka
+  port: 29092
+  order_topic: loms.order-events
+  consumer_group_id: notifier-group
+  brokers: kafka:29092

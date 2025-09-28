@@ -1,0 +1,9 @@
+go 1.23.1
+
+use (
+./cart
+./loms
+./notifier
+./comments
+./e2e
+)

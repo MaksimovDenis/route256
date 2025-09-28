@@ -1,0 +1,9 @@
+.idea
+bin
+cover.out
+cover.out.tmp
+.vscode
+allure-results/
+coverage.html
+allure-report/
+vendor-proto

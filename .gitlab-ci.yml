@@ -1,0 +1,4 @@
+include:
+  - project: 'go/classroom-18/students/base'
+    ref: master
+    file: '.gitlab-ci.yml'

@@ -1,0 +1,34 @@
+service:
+  host: localhost
+  grpc_port: 8083
+  http_port: 8084
+  swagger_port: 8090
+  timiout: 10
+  handle_period: 2
+  limit_outbox_msg: 100
+  log_level: debug
+
+jaeger:
+  host: localhost
+  port: 6831
+
+db_master:
+  host: postgres-master
+  port: 5432
+  user: loms-user
+  password: loms-password
+  db_name: loms_db
+
+db_replica:
+  host: postgres-replica
+  port: 5432
+  user: loms-user
+  password: loms-password
+  db_name: loms_db
+
+kafka:
+  host: kafka
+  port: 29092
+  order_topic: loms.order-events
+  brokers: kafka:29092
+  retry_count_msg: 5

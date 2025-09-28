@@ -1,0 +1,443 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "loms service",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "Orders",
+      "description": "LOMS service",
+      "externalDocs": {
+        "description": "HTTP loms service",
+        "url": "localhost:8084"
+      }
+    },
+    {
+      "name": "Stocks",
+      "description": "LOMS service",
+      "externalDocs": {
+        "description": "HTTP loms service",
+        "url": "localhost:8084"
+      }
+    },
+    {
+      "name": "Health",
+      "description": "LOMS health check service",
+      "externalDocs": {
+        "description": "HTTP LOMS health check endpoint",
+        "url": "localhost:8084"
+      }
+    }
+  ],
+  "host": "localhost:8084",
+  "basePath": "/",
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "Health_Check",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1HealthCheckResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/order/cancel": {
+      "post": {
+        "operationId": "Orders_OrderCancel",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1OrderCancelResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "Запрос на отмену заказа",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1OrderCancelRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/order/create": {
+      "post": {
+        "operationId": "Orders_OrderCreate",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1OrderCreateResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "Запрос на создание нового заказа",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1OrderCreateRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/order/info": {
+      "get": {
+        "operationId": "Orders_OrderInfo",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1OrderInfoResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "orderId",
+            "description": "Order ID\n\nУникальный идентификтор заказа",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/order/pay": {
+      "post": {
+        "operationId": "Orders_OrderPay",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1OrderPayResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "Запрос на оплату заказа",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1OrderPayRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/stock/info": {
+      "get": {
+        "operationId": "Stocks_StocksInfo",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1StocksInfoResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "sku",
+            "description": "SKU\n\nИдентификатор товара",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "Stocks"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1HealthCheckResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "format": "string",
+          "description": "Сообщение состояния сервиса, обычно OK",
+          "title": "Message"
+        }
+      },
+      "description": "Ответ проверки состояния сервиса",
+      "title": "HealthCheckResponse",
+      "required": [
+        "message"
+      ]
+    },
+    "v1Item": {
+      "type": "object",
+      "properties": {
+        "sku": {
+          "type": "integer",
+          "format": "int64",
+          "example": 1076963,
+          "description": "SKU товара",
+          "title": "SKU"
+        },
+        "count": {
+          "type": "integer",
+          "format": "int32",
+          "example": 3,
+          "description": "Количество товаров соответствующего SKU",
+          "title": "Count"
+        }
+      },
+      "description": "Товары в заказе",
+      "title": "Item",
+      "required": [
+        "sku",
+        "count"
+      ]
+    },
+    "v1OrderCancelRequest": {
+      "type": "object",
+      "properties": {
+        "orderId": {
+          "type": "integer",
+          "format": "int64",
+          "example": 1,
+          "description": "Идентификатор заказа для отмены",
+          "title": "ID заказа"
+        }
+      },
+      "description": "Запрос на отмену заказа",
+      "title": "OrderCancelRequest",
+      "required": [
+        "orderId"
+      ]
+    },
+    "v1OrderCancelResponse": {
+      "type": "object",
+      "description": "Ответ на запрос отмены заказа",
+      "title": "OrderCancelResponse"
+    },
+    "v1OrderCreateRequest": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "example": 12345,
+          "description": "ID пользователя, создавшего заказ",
+          "title": "User ID"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Item"
+          },
+          "description": "Список закза",
+          "title": "Order Items",
+          "minItems": 1
+        }
+      },
+      "description": "Запрос на создание нового заказа",
+      "title": "OrderCreateRequest",
+      "required": [
+        "userId",
+        "items"
+      ]
+    },
+    "v1OrderCreateResponse": {
+      "type": "object",
+      "properties": {
+        "orderId": {
+          "type": "integer",
+          "format": "int64",
+          "example": 1,
+          "description": "Уникальный идентификатор созданного заказа",
+          "title": "Order ID"
+        }
+      },
+      "description": "Ответ после успешно созданного заказа",
+      "title": "OrderCreateResponse",
+      "required": [
+        "orderId"
+      ]
+    },
+    "v1OrderInfoResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "example": "Pending",
+          "description": "Статус текущего заказа",
+          "title": "Статус заказа"
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "example": 12345,
+          "description": "Идентификатор пользователя, сделавшего заказ",
+          "title": "ID пользователя"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Item"
+          },
+          "description": "Список товаров, включенных в заказ",
+          "title": "Товары заказа"
+        }
+      },
+      "description": "Информация по заказу",
+      "title": "OrderInfoResponse",
+      "required": [
+        "status",
+        "userId",
+        "items"
+      ]
+    },
+    "v1OrderPayRequest": {
+      "type": "object",
+      "properties": {
+        "orderId": {
+          "type": "integer",
+          "format": "int64",
+          "example": 1,
+          "description": "Идентификатор заказа, который нужно оплатить",
+          "title": "ID заказа"
+        }
+      },
+      "description": "Запрос на оплату заказа",
+      "title": "OrderPayRequest",
+      "required": [
+        "orderId"
+      ]
+    },
+    "v1OrderPayResponse": {
+      "type": "object",
+      "description": "Ответ на запрос оплаты заказа",
+      "title": "OrderPayResponse"
+    },
+    "v1StocksInfoResponse": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer",
+          "format": "uint32",
+          "example": 50,
+          "description": "Доступное количество товара на складе",
+          "title": "Количество на складе"
+        }
+      },
+      "description": "Ответ с информацией о количестве товара на складе",
+      "title": "StocksInfoResponse",
+      "required": [
+        "count"
+      ]
+    }
+  }
+}

@@ -1,0 +1,25 @@
+service:
+  host: 0.0.0.0
+  port: 8080
+  workers: 5
+  cart_cap: 100
+  retry_timeout: 2
+  timeout: 10
+  log_level: "debug"
+  check_storage_interval: 5
+
+jaeger:
+  host: jaeger
+  port: 6831
+
+product_service:
+  host: product-service
+  port: 8082
+  token: testToken
+  limit: 10
+  burst: 10
+  timeout: 60
+
+loms_service:
+  host: loms
+  port: 8083
