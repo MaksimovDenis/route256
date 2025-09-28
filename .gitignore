@@ -7,3 +7,4 @@ allure-results/
 coverage.html
 allure-report/
 vendor-proto
+.DS_Store
